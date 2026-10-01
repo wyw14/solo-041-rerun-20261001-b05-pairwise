@@ -23,6 +23,9 @@ type DeviceCommand struct {
 	DeviceID   string            `json:"device_id"`
 	Kind       DeviceKind        `json:"kind"`
 	Generation uint64            `json:"generation"`
+	// Sequence is the journal sequence of the event that authorized this
+	// command. It orders commands inside one generation.
+	Sequence   uint64            `json:"sequence,omitempty"`
 	Action     string            `json:"action"`
 	Setpoint   float64           `json:"setpoint,omitempty"`
 	Metadata   map[string]string `json:"metadata,omitempty"`

@@ -40,8 +40,13 @@ func NewLedger() *Ledger {
 
 func (l *Ledger) Record(change Change) {
 	l.mu.Lock()
-	l.changes[change.BatchID] = append(l.changes[change.BatchID], change)
-	l.mu.Unlock()
+	defer l.mu.Unlock()
+	values := l.changes[change.BatchID]
+	if len(values) > 0 && values[len(values)-1].ID == change.ID {
+		// A retried record of the latest change must not be appended twice.
+		return
+	}
+	l.changes[change.BatchID] = append(values, change)
 }
 
 func (l *Ledger) Latest(batchID uuid.UUID) (Change, bool) {
